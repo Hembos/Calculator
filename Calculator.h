@@ -33,7 +33,9 @@ private:
 	Type getType(std::string const& name) const;
 	void createTokensFromExp(std::string const& expression, std::queue<token>& tokens);
 	void createPostfixNotation(std::queue<token>& postfixNotation, std::queue<token>& tokens);
+	std::queue<token> getPostfixNotation(std::string const& expression);
+	double calculate(std::queue<token> postfixNotation);
 public:
 	Calculator();
-	double calculate(std::string const& expression);
+	double execute(std::string const& expression);
 };

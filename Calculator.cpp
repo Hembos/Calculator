@@ -11,7 +11,14 @@ Calculator::Calculator()
 	standartOper["~"] = [](double x, double y) -> double { return -x; };
 }
 
-double Calculator::calculate(std::string const& expression)
+double Calculator::execute(std::string const& expression)
+{
+	std::queue<token> postfixNotation = getPostfixNotation(expression);
+
+	return calculate(postfixNotation);
+}
+
+std::queue<Calculator::token> Calculator::getPostfixNotation(std::string const& expression)
 {
 	std::queue<token> tokens;
 	std::queue<token> postfixNotation;
@@ -19,6 +26,18 @@ double Calculator::calculate(std::string const& expression)
 	createTokensFromExp(expression, tokens);
 	createPostfixNotation(postfixNotation, tokens);
 
+	return postfixNotation;
+}
+
+double getNumber(std::stack<double>& numbers)
+{
+	double number = numbers.top();
+	numbers.pop();
+	return number;
+}
+
+double Calculator::calculate(std::queue<token> postfixNotation)
+{
 	std::stack<double> numbers;
 
 	auto const& binaryMap = plugins.getBinaryMap();
@@ -44,8 +63,7 @@ double Calculator::calculate(std::string const& expression)
 				if (numbers.size() < 1)
 					throw std::exception("Not correct expression");
 
-				double a = numbers.top();
-				numbers.pop();
+				double a = getNumber(numbers);
 
 				double opRes = standartOper[t.name](a, 0);
 
@@ -56,10 +74,8 @@ double Calculator::calculate(std::string const& expression)
 			if (numbers.size() < 2)
 				throw std::exception("Not correct expression");
 
-			double a = numbers.top();
-			numbers.pop();
-			double b = numbers.top();
-			numbers.pop();
+			double b = getNumber(numbers);
+			double a = getNumber(numbers);
 
 			double opRes = standartOper[t.name](a, b);
 
@@ -75,10 +91,8 @@ double Calculator::calculate(std::string const& expression)
 				if (numbers.size() < 2)
 					throw std::exception("Not correct expression");
 
-				double a = numbers.top();
-				numbers.pop();
-				double b = numbers.top();
-				numbers.pop();
+				double b = getNumber(numbers);
+				double a = getNumber(numbers);
 
 				funcRes = (binaryMap.at(t.name)(a, b));
 			}
@@ -89,8 +103,7 @@ double Calculator::calculate(std::string const& expression)
 				if (unaryMap.find(t.name) == unaryMap.end())
 					throw std::exception("Not correct function");
 
-				double a = numbers.top();
-				numbers.pop();
+				double a = getNumber(numbers);
 
 				funcRes = (unaryMap.at(t.name)(a));
 			}

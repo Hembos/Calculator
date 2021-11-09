@@ -48,25 +48,23 @@ void PluginLoader::getFuncFromDll(std::string const& fileName)
     {
         throw std::exception("dll not found");
     }
+    
+    std::string funcName = fileName.substr(0, fileName.find(".dll"));
+
+    unaryFunc ufunc = (unaryFunc)GetProcAddress(hm, "unaryFunc");
+
+    if (ufunc == nullptr)
+    {
+        binaryFunc bfunc = (binaryFunc)GetProcAddress(hm, "binaryFunc");
+        if (bfunc == nullptr)
+        {
+            throw std::exception("function not found");
+        }
+
+        binaryFuncs.insert(std::pair<std::string, binaryFunc>(funcName, bfunc));
+    }
     else
     {
-        std::string funcName = fileName.substr(0, fileName.find(".dll"));
-
-        unaryFunc ufunc = (unaryFunc)GetProcAddress(hm, "unaryFunc");
-
-        if (ufunc == nullptr)
-        {
-            binaryFunc bfunc = (binaryFunc)GetProcAddress(hm, "binaryFunc");
-            if (bfunc == nullptr)
-            {
-                throw std::exception("function not found");
-            }
-
-            binaryFuncs.insert(std::pair<std::string, binaryFunc>(funcName, bfunc));
-        }
-        else
-        {
-            unaryFuncs.insert(std::pair<std::string, unaryFunc>(funcName, ufunc));
-        }
+        unaryFuncs.insert(std::pair<std::string, unaryFunc>(funcName, ufunc));
     }
 }

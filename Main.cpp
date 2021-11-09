@@ -16,7 +16,7 @@ int main()
 		
 		try
 		{
-			double res = calculator.calculate(expression);
+			double res = calculator.execute(expression);
 			std::cout << "= " << res << std::endl;
 		}
 		catch (std::exception& ex)
